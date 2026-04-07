@@ -1,12 +1,5 @@
 {
   "players": ["Pausi", "Nili", "Carre", "Pami"],
   "scores": [
-    {
-      "date": "2026-04-06",
-      "player": "Pausi",
-      "final_score": 919,
-      "rounds": [94, 94, 100, 97, 80],
-      "raw": "www.maptap.gg April 6\n94🏅 94🏅 100🎯 97🔥 80✨\nFinal score: 919"
-    }
   ]
 }
