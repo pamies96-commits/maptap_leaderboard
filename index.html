@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MapTap Weekly Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f0e;
+      --bg2: #151918;
+      --bg3: #1c2120;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --green: #3bff8a;
+      --green-dim: #1a7a42;
+      --green-glow: rgba(59,255,138,0.15);
+      --text: #f0f5f2;
+      --text2: #7a9488;
+      --text3: #4a5e55;
+      --gold: #f5c842;
+      --silver: #a8b8b0;
+      --bronze: #c47a3a;
+      --mono: 'DM Mono', monospace;
+      --display: 'Syne', sans-serif;
+    }
+
+    html { background: var(--bg); color: var(--text); font-family: var(--mono); }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(59,255,138,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 10% 80%, rgba(59,255,138,0.03) 0%, transparent 50%),
+        var(--bg);
+    }
+
+    .wrap { max-width: 780px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    /* HEADER */
+    header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 2.5rem; gap: 1rem;
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .pin {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: var(--green); border-radius: 50% 50% 50% 4px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pin svg { width: 20px; height: 20px; fill: #0d0f0e; }
+    .site-title {
+      font-family: var(--display); font-size: 26px; font-weight: 800;
+      letter-spacing: -0.03em; color: var(--text);
+      line-height: 1.1;
+    }
+    .site-title span { color: var(--green); }
+    .site-sub { font-size: 11px; color: var(--text3); letter-spacing: 0.08em; margin-top: 2px; }
+    .week-chip {
+      font-size: 11px; font-family: var(--mono);
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 20px; padding: 5px 14px;
+      color: var(--text2); white-space: nowrap;
+    }
+    .week-chip strong { color: var(--green); font-weight: 500; }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text3); margin-bottom: 12px; font-family: var(--mono);
+    }
+
+    /* PODIUM */
+    .podium { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 2.5rem; align-items: end; }
+    .pod {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 12px 14px; text-align: center;
+      transition: border-color 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .pod::before {
+      content: ''; position: absolute; inset: 0; opacity: 0;
+      background: var(--green-glow); transition: opacity 0.3s;
+    }
+    .pod:hover::before { opacity: 1; }
+    .pod.first {
+      border-color: rgba(245, 200, 66, 0.35);
+      margin-bottom: 0;
+    }
+    .pod.second { margin-bottom: 22px; }
+    .pod.third { margin-bottom: 36px; }
+    .pod-medal { font-size: 22px; margin-bottom: 6px; display: block; }
+    .pod-name {
+      font-family: var(--display); font-size: 15px; font-weight: 700;
+      color: var(--text); margin-bottom: 6px;
+    }
+    .pod-score {
+      font-size: 28px; font-weight: 500; font-family: var(--mono);
+      color: var(--green); line-height: 1;
+    }
+    .pod.second .pod-score { color: var(--silver); }
+    .pod.third .pod-score { color: var(--bronze); }
+    .pod-pts { font-size: 10px; color: var(--text3); margin-top: 3px; letter-spacing: 0.06em; }
+    .pod-days { font-size: 10px; color: var(--text3); margin-top: 5px; }
+
+    /* WEEK PROGRESS */
+    .week-progress { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 2.5rem; }
+    .day-pip {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 4px; text-align: center;
+    }
+    .day-pip.has-data { border-color: var(--green-dim); }
+    .day-pip.today { border-color: var(--green); }
+    .day-pip.future { opacity: 0.3; }
+    .dp-label { font-size: 10px; color: var(--text3); letter-spacing: 0.05em; }
+    .day-pip.today .dp-label { color: var(--green); }
+    .dp-dot { width: 6px; height: 6px; border-radius: 50%; margin: 5px auto 0; background: var(--border2); }
+    .day-pip.has-data .dp-dot { background: var(--green); }
+    .day-pip.today .dp-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+    /* TABLE */
+    .table-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden; margin-bottom: 2.5rem;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th {
+      padding: 11px 14px; text-align: left;
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text3); font-weight: 500; font-family: var(--mono);
+    }
+    th:not(:first-child):not(:last-child) { text-align: center; }
+    th:last-child { text-align: right; }
+    td { padding: 0; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+
+    .row-main {
+      display: grid;
+      grid-template-columns: 200px repeat(var(--day-count, 7), 1fr) 80px;
+      align-items: center; cursor: pointer;
+      transition: background 0.15s;
+      padding: 0;
+    }
+    .row-main:hover { background: rgba(255,255,255,0.03); }
+
+    .player-cell {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 14px;
+    }
+    .rank { font-size: 12px; color: var(--text3); width: 16px; flex-shrink: 0; }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 500; flex-shrink: 0;
+      font-family: var(--display);
+    }
+    .av-0 { background: rgba(59,255,138,0.15); color: var(--green); }
+    .av-1 { background: rgba(168,184,176,0.15); color: var(--silver); }
+    .av-2 { background: rgba(196,122,58,0.15); color: var(--bronze); }
+    .av-3 { background: rgba(120,100,200,0.15); color: #a08cf0; }
+    .player-name { font-family: var(--display); font-weight: 600; font-size: 14px; color: var(--text); }
+
+    .day-cell {
+      text-align: center; padding: 13px 6px;
+      font-size: 13px; color: var(--text2);
+    }
+    .day-cell.empty { color: var(--text3); }
+    .day-cell.best { color: var(--green); font-weight: 500; }
+
+    .total-cell {
+      text-align: right; padding: 13px 14px;
+      font-size: 14px; font-weight: 500; color: var(--text);
+    }
+    .expand-icon {
+      font-size: 10px; color: var(--text3);
+      transition: transform 0.2s; display: inline-block;
+      margin-left: 6px;
+    }
+    .row-wrap.open .expand-icon { transform: rotate(180deg); }
+
+    /* EXPANDED ROUNDS */
+    .rounds-row {
+      display: none; background: rgba(0,0,0,0.2);
+      border-top: 1px solid var(--border);
+    }
+    .row-wrap.open .rounds-row { display: block; }
+    .rounds-inner { padding: 12px 14px 14px; }
+    .rounds-title { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .day-rounds { margin-bottom: 10px; }
+    .day-rounds:last-child { margin-bottom: 0; }
+    .dr-date { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+    .dr-bars { display: flex; gap: 6px; align-items: flex-end; }
+    .dr-bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .dr-bar {
+      width: 32px; border-radius: 3px 3px 0 0;
+      background: var(--green-dim); transition: background 0.2s;
+      min-height: 4px;
+    }
+    .dr-bar.perfect { background: var(--green); }
+    .dr-score { font-size: 10px; color: var(--text2); }
+
+    /* HISTORY */
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+    .hist-week {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem;
+    }
+    .hist-label { font-size: 12px; color: var(--text2); }
+    .hist-winner { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--green); }
+    .hist-scores { display: flex; gap: 12px; }
+    .hist-entry { text-align: center; }
+    .hist-name { font-size: 10px; color: var(--text3); margin-bottom: 2px; }
+    .hist-score { font-size: 13px; color: var(--text2); }
+
+    /* FOOTER */
+    footer {
+      text-align: center; font-size: 11px; color: var(--text3);
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--text3); text-decoration: none; }
+    footer a:hover { color: var(--green); }
+
+    /* NO DATA */
+    .no-data {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--text3); font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .podium { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+      .pod-score { font-size: 22px; }
+      th, td { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-left">
+      <div class="pin">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </div>
+      <div>
+        <div class="site-title">Map<span>Tap</span></div>
+        <div class="site-sub">WEEKLY LEADERBOARD</div>
+      </div>
+    </div>
+    <div class="week-chip" id="weekChip">Loading...</div>
+  </header>
+
+  <!-- PODIUM -->
+  <div class="section-label">Weekly podium</div>
+  <div class="podium" id="podium">
+    <div class="no-data" style="grid-column:1/-1">Loading scores...</div>
+  </div>
+
+  <!-- WEEK PROGRESS -->
+  <div class="section-label">Days played this week</div>
+  <div class="week-progress" id="weekProgress"></div>
+
+  <!-- STANDINGS TABLE -->
+  <div class="section-label">Full standings</div>
+  <div class="table-card" id="tableCard">
+    <div class="no-data">Loading...</div>
+  </div>
+
+  <!-- HISTORY -->
+  <div id="historySection" style="display:none">
+    <div class="section-label">Previous weeks</div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <footer>
+    <a href="admin.html">+ add scores</a> &nbsp;·&nbsp;
+    data from <a href="https://www.maptap.gg" target="_blank">maptap.gg</a>
+  </footer>
+
+</div>
+<script>
+// ── helpers ──────────────────────────────────────────────────────────────────
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_NAMES = ['January','February','March','April','May','June',
+  'July','August','September','October','November','December'];
+
+function getWeekBounds(date) {
+  const d = new Date(date);
+  const day = d.getDay(); // 0=Sun
+  const diffToMon = (day === 0 ? -6 : 1 - day);
+  const mon = new Date(d); mon.setDate(d.getDate() + diffToMon); mon.setHours(0,0,0,0);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+  return { mon, sun };
+}
+
+function toYMD(date) {
+  return date.toISOString().slice(0,10);
+}
+
+function fmtWeek(mon, sun) {
+  const opts = { day: 'numeric', month: 'short' };
+  return `${mon.toLocaleDateString('en-GB', opts)} – ${sun.toLocaleDateString('en-GB', opts)}`;
+}
+
+function getWeekNumber(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+const AVATARS = ['av-0','av-1','av-2','av-3'];
+const MEDALS = ['🥇','🥈','🥉'];
+const POD_CLASSES = ['first','second','third'];
+
+// ── main ─────────────────────────────────────────────────────────────────────
+async function load() {
+  let data;
+  try {
+    const res = await fetch('scores.json?t=' + Date.now());
+    data = await res.json();
+  } catch(e) {
+    document.getElementById('podium').innerHTML = '<div class="no-data">Could not load scores.json</div>';
+    return;
+  }
+
+  const players = data.players || [];
+  const allScores = data.scores || [];
+
+  const today = new Date();
+  const { mon, sun } = getWeekBounds(today);
+  const weekNum = getWeekNumber(today);
+
+  document.getElementById('weekChip').innerHTML =
+    `Week <strong>${weekNum}</strong> · ${fmtWeek(mon, sun)}`;
+
+  // filter this week
+  const weekScores = allScores.filter(s => {
+    const d = new Date(s.date + 'T12:00:00');
+    return d >= mon && d <= sun;
+  });
+
+  // dates present this week (Mon–Sun)
+  const datesInWeek = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(mon); d.setDate(mon.getDate() + i);
+    datesInWeek.push(toYMD(d));
+  }
+
+  // which dates have any score
+  const datesWithData = new Set(weekScores.map(s => s.date));
+
+  // week progress pips
+  const prog = document.getElementById('weekProgress');
+  prog.innerHTML = '';
+  const todayYMD = toYMD(today);
+  datesInWeek.forEach((ymd, i) => {
+    const pip = document.createElement('div');
+    const dayName = DAY_NAMES[(mon.getDay() + i) % 7] || DAY_NAMES[i === 6 ? 0 : i+1];
+    const labelNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const isPast = ymd < todayYMD;
+    const isToday = ymd === todayYMD;
+    const isFuture = ymd > todayYMD;
+    const hasData = datesWithData.has(ymd);
+    pip.className = 'day-pip' + (hasData ? ' has-data' : '') + (isToday ? ' today' : '') + (isFuture ? ' future' : '');
+    pip.innerHTML = `<div class="dp-label">${labelNames[i]}</div><div class="dp-dot"></div>`;
+    prog.appendChild(pip);
+  });
+
+  // totals per player
+  const totals = {};
+  const byPlayerDate = {}; // [player][date] = {final_score, rounds}
+  players.forEach(p => { totals[p] = 0; byPlayerDate[p] = {}; });
+
+  weekScores.forEach(s => {
+    if (totals[s.player] !== undefined) {
+      totals[s.player] += s.final_score;
+      byPlayerDate[s.player][s.date] = s;
+    }
+  });
+
+  // sort players by total
+  const sorted = [...players].sort((a,b) => totals[b] - totals[a]);
+
+  // ── PODIUM ────────────────────────────────────────────────────────────────
+  const podiumEl = document.getElementById('podium');
+  if (sorted.length === 0) {
+    podiumEl.innerHTML = '<div class="no-data" style="grid-column:1/-1">No scores yet this week.</div>';
+  } else {
+    // reorder for visual: 2nd, 1st, 3rd
+    const visual = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
+    const visualClasses = sorted[1] ? ['second','first','third'] : ['first'];
+    podiumEl.innerHTML = '';
+
+    // We always show [1st] in center, so rebuild properly
+    const podOrder = sorted.length >= 3
+      ? [sorted[1], sorted[0], sorted[2]]
+      : sorted.length === 2 ? [null, sorted[0], sorted[1]]
+      : [null, sorted[0], null];
+    const podCls = ['second','first','third'];
+
+    podOrder.forEach((player, i) => {
+      const div = document.createElement('div');
+      if (!player) { div.style.visibility = 'hidden'; div.className = 'pod'; podiumEl.appendChild(div); return; }
+      const rank = sorted.indexOf(player);
+      div.className = 'pod ' + podCls[i];
+      const daysPlayed = Object.keys(byPlayerDate[player]).length;
+      div.innerHTML = `
+        <span class="pod-medal">${MEDALS[rank] || ''}</span>
+        <div class="pod-name">${player}</div>
+        <div class="pod-score">${totals[player].toLocaleString()}</div>
+        <div class="pod-pts">pts</div>
+        <div class="pod-days">${daysPlayed} day${daysPlayed !== 1 ? 's' : ''} played</div>
+      `;
+      podiumEl.appendChild(div);
+    });
+  }
+
+  // ── TABLE ─────────────────────────────────────────────────────────────────
+  const activeDates = datesInWeek.filter(d => datesWithData.has(d) || d <= todayYMD).slice(0, 7);
+  // only show days that have at least one score OR are today/past
+  const shownDates = datesInWeek.filter(d => d <= todayYMD);
+
+  const tableCard = document.getElementById('tableCard');
+  if (sorted.length === 0) {
+    tableCard.innerHTML = '<div class="no-data">No scores yet this week. <a href="admin.html" style="color:var(--green)">Add the first one →</a></div>';
+  } else {
+    const labelNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+    // find best score per date across all players
+    const bestPerDate = {};
+    shownDates.forEach(d => {
+      let best = 0;
+      players.forEach(p => { if (byPlayerDate[p][d]) best = Math.max(best, byPlayerDate[p][d].final_score); });
+      bestPerDate[d] = best;
+    });
+
+    let html = `<table>
+      <thead><tr>
+        <th>Player</th>
+        ${shownDates.map((d,i) => `<th style="text-align:center">${labelNames[datesInWeek.indexOf(d)]}</th>`).join('')}
+        <th style="text-align:right">Total</th>
+      </tr></thead>
+      <tbody>`;
+
+    sorted.forEach((player, rank) => {
+      const avClass = AVATARS[rank % AVATARS.length];
+      const initials = player.slice(0,2).toUpperCase();
+      const total = totals[player];
+      const rowId = `row-${player.replace(/\s/g,'_')}`;
+
+      const dayCells = shownDates.map(d => {
+        const entry = byPlayerDate[player][d];
+        if (!entry) return `<div class="day-cell empty">–</div>`;
+        const isBest = entry.final_score === bestPerDate[d] && entry.final_score > 0;
+        return `<div class="day-cell${isBest ? ' best' : ''}">${entry.final_score}</div>`;
+      }).join('');
+
+      // rounds data for expand
+      const roundDays = shownDates.filter(d => byPlayerDate[player][d] && byPlayerDate[player][d].rounds);
+      let roundsHtml = '';
+      if (roundDays.length > 0) {
+        roundsHtml = roundDays.map(d => {
+          const entry = byPlayerDate[player][d];
+          const dateObj = new Date(d + 'T12:00:00');
+          const label = `${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}`;
+          const maxR = Math.max(...entry.rounds);
+          const bars = entry.rounds.map((r, ri) => {
+            const h = Math.round((r / 100) * 48);
+            return `<div class="dr-bar-wrap">
+              <div class="dr-bar${r === 100 ? ' perfect' : ''}" style="height:${h}px"></div>
+              <div class="dr-score">${r}</div>
+            </div>`;
+          }).join('');
+          return `<div class="day-rounds">
+            <div class="dr-date">${label} — ${entry.final_score} pts</div>
+            <div class="dr-bars">${bars}</div>
+          </div>`;
+        }).join('');
+      } else {
+        roundsHtml = '<div style="font-size:12px;color:var(--text3)">No round detail available.</div>';
+      }
+
+      html += `
+      <tr><td colspan="${shownDates.length + 2}" style="padding:0">
+        <div class="row-wrap" id="${rowId}">
+          <div class="row-main" onclick="toggleRow('${rowId}')" style="display:grid;grid-template-columns:200px repeat(${shownDates.length},1fr) 80px">
+            <div class="player-cell">
+              <span class="rank">${rank+1}</span>
+              <div class="avatar ${avClass}">${initials}</div>
+              <span class="player-name">${player}</span>
+              <span class="expand-icon">▼</span>
+            </div>
+            ${dayCells}
+            <div class="total-cell">${total.toLocaleString()}</div>
+          </div>
+          <div class="rounds-row">
+            <div class="rounds-inner">
+              <div class="rounds-title">Round breakdown</div>
+              ${roundsHtml}
+            </div>
+          </div>
+        </div>
+      </td></tr>`;
+    });
+
+    html += '</tbody></table>';
+    tableCard.innerHTML = html;
+  }
+
+  // ── HISTORY ───────────────────────────────────────────────────────────────
+  // group scores by week key (YYYY-Www)
+  const weeks = {};
+  allScores.forEach(s => {
+    const d = new Date(s.date + 'T12:00:00');
+    const { mon: wm } = getWeekBounds(d);
+    const key = toYMD(wm);
+    if (key === toYMD(mon)) return; // skip current
+    if (!weeks[key]) weeks[key] = { mon: wm, scores: [] };
+    weeks[key].scores.push(s);
+  });
+
+  const histKeys = Object.keys(weeks).sort().reverse();
+  if (histKeys.length > 0) {
+    document.getElementById('historySection').style.display = 'block';
+    const histList = document.getElementById('historyList');
+    histList.innerHTML = histKeys.map(key => {
+      const { mon: wm, scores } = weeks[key];
+      const { sun: ws } = getWeekBounds(wm);
+      const t = {};
+      players.forEach(p => t[p] = 0);
+      scores.forEach(s => { if (t[s.player] !== undefined) t[s.player] += s.final_score; });
+      const winner = [...players].sort((a,b) => t[b]-t[a])[0];
+      const sortedP = [...players].sort((a,b) => t[b]-t[a]);
+      return `<div class="hist-week">
+        <div>
+          <div class="hist-label">${fmtWeek(wm, ws)}</div>
+          <div class="hist-winner">🏆 ${winner}</div>
+        </div>
+        <div class="hist-scores">
+          ${sortedP.map(p => `<div class="hist-entry">
+            <div class="hist-name">${p}</div>
+            <div class="hist-score">${t[p].toLocaleString()}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function toggleRow(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+load();
+</script>
+</body>
+</html>
