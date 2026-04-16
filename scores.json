@@ -168,6 +168,11 @@
       "final_score": 873
     },
     {
+      "date": "2026-04-14",
+      "player": "Nili",
+      "final_score": 939
+    },
+    {
       "date": "2026-04-15",
       "player": "Pausi",
       "final_score": 928
@@ -176,11 +181,6 @@
       "date": "2026-04-15",
       "player": "Pami",
       "final_score": 952
-    },
-    {
-      "date": "2026-04-14",
-      "player": "Nili",
-      "final_score": 939
     },
     {
       "date": "2026-04-15",
@@ -196,6 +196,11 @@
       "date": "2026-04-16",
       "player": "Pami",
       "final_score": 933
+    },
+    {
+      "date": "2026-04-16",
+      "player": "Nili",
+      "final_score": 900
     }
   ]
 }
