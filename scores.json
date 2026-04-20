@@ -221,6 +221,19 @@
       "date": "2026-04-19",
       "player": "Pami",
       "final_score": 910
+    },
+    {
+      "date": "2026-04-20",
+      "player": "Pausi",
+      "final_score": 782,
+      "rounds": [
+        97,
+        92,
+        67,
+        72,
+        81
+      ],
+      "raw": "www.maptap.gg April 21\n97🔥 92🏆 67🙂 72🤗 81🌟\nFinal score: 782"
     }
   ]
 }
