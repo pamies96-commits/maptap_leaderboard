@@ -73,6 +73,55 @@
       color: var(--text3); margin-bottom: 12px; font-family: var(--mono);
     }
 
+    /* WEEKLY RECAP BANNER */
+    .recap-banner {
+      background: linear-gradient(135deg, rgba(59,255,138,0.08) 0%, rgba(59,255,138,0.03) 100%);
+      border: 1px solid var(--green-dim);
+      border-radius: 14px; padding: 20px 24px;
+      margin-bottom: 2.5rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .recap-banner:hover {
+      border-color: var(--green);
+      background: linear-gradient(135deg, rgba(59,255,138,0.12) 0%, rgba(59,255,138,0.05) 100%);
+    }
+    .recap-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .recap-title {
+      font-family: var(--display); font-size: 16px; font-weight: 700;
+      color: var(--green); display: flex; align-items: center; gap: 8px;
+    }
+    .recap-icon { font-size: 18px; }
+    .recap-subtitle {
+      font-size: 11px; color: var(--text3); letter-spacing: 0.06em;
+    }
+    .recap-summary {
+      font-size: 13px; line-height: 1.6; color: var(--text2);
+      margin-bottom: 12px;
+    }
+    .recap-actions {
+      display: flex; gap: 10px; align-items: center;
+    }
+    .recap-btn {
+      font-size: 12px; padding: 6px 14px;
+      background: var(--bg3); border: 1px solid var(--border2);
+      border-radius: 6px; color: var(--text2);
+      cursor: pointer; transition: all 0.15s;
+      font-family: var(--mono);
+    }
+    .recap-btn:hover {
+      border-color: var(--green); color: var(--green);
+    }
+    .recap-btn-primary {
+      background: var(--green); color: #0d0f0e;
+      border-color: var(--green); font-weight: 500;
+    }
+    .recap-btn-primary:hover {
+      background: #5affa0;
+    }
+
     /* PODIUM */
     .podium { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 2.5rem; align-items: end; }
     .pod {
@@ -209,7 +258,15 @@
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 10px; padding: 14px 16px;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 1rem;
+      gap: 1rem; cursor: pointer; transition: all 0.15s;
+      position: relative;
+    }
+    .hist-week:hover {
+      border-color: var(--border2);
+      background: var(--bg3);
+    }
+    .hist-week.has-recap:hover {
+      border-color: var(--green-dim);
     }
     .hist-label { font-size: 12px; color: var(--text2); }
     .hist-winner { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--green); }
@@ -217,6 +274,165 @@
     .hist-entry { text-align: center; }
     .hist-name { font-size: 10px; color: var(--text3); margin-bottom: 2px; }
     .hist-score { font-size: 13px; color: var(--text2); }
+    .recap-indicator {
+      position: absolute; top: 10px; right: 10px;
+      font-size: 11px; opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .hist-week.has-recap:hover .recap-indicator {
+      opacity: 1;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(13, 15, 14, 0.9);
+      backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border2);
+      border-radius: 16px; max-width: 560px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-title {
+      font-family: var(--display); font-size: 18px; font-weight: 700;
+      color: var(--text); margin-bottom: 6px;
+    }
+    .modal-subtitle {
+      font-size: 12px; color: var(--text3);
+    }
+    .modal-body {
+      padding: 24px;
+    }
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+
+    /* RECAP CARD */
+    .recap-card {
+      background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 100%);
+      border: 1px solid var(--green-dim);
+      border-radius: 12px; padding: 28px;
+      position: relative; overflow: hidden;
+    }
+    .recap-card::before {
+      content: ''; position: absolute;
+      top: -50%; right: -20%; width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(59,255,138,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .recap-card-header {
+      text-align: center; margin-bottom: 24px;
+      position: relative; z-index: 1;
+    }
+    .recap-card-icon {
+      font-size: 32px; margin-bottom: 8px;
+    }
+    .recap-card-title {
+      font-family: var(--display); font-size: 20px; font-weight: 800;
+      color: var(--text); margin-bottom: 4px;
+    }
+    .recap-card-title span { color: var(--green); }
+    .recap-card-date {
+      font-size: 11px; color: var(--text3); letter-spacing: 0.08em;
+    }
+    
+    .recap-stat-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; margin-bottom: 24px;
+      position: relative; z-index: 1;
+    }
+    .recap-stat {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px;
+      text-align: center;
+    }
+    .recap-stat-label {
+      font-size: 10px; color: var(--text3);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .recap-stat-value {
+      font-family: var(--display); font-size: 22px;
+      font-weight: 700; color: var(--green);
+    }
+    .recap-stat-sub {
+      font-size: 11px; color: var(--text2); margin-top: 2px;
+    }
+
+    .recap-podium-mini {
+      margin-bottom: 20px;
+      position: relative; z-index: 1;
+    }
+    .recap-podium-title {
+      font-size: 11px; color: var(--text3);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 10px; text-align: center;
+    }
+    .recap-podium-row {
+      display: flex; justify-content: space-around;
+      gap: 10px;
+    }
+    .recap-podium-item {
+      text-align: center; flex: 1;
+    }
+    .recap-podium-medal { font-size: 20px; margin-bottom: 4px; }
+    .recap-podium-name {
+      font-family: var(--display); font-size: 13px;
+      font-weight: 600; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .recap-podium-score {
+      font-size: 16px; font-weight: 500;
+      font-family: var(--mono);
+    }
+    .recap-podium-item:nth-child(1) .recap-podium-score { color: var(--gold); }
+    .recap-podium-item:nth-child(2) .recap-podium-score { color: var(--silver); }
+    .recap-podium-item:nth-child(3) .recap-podium-score { color: var(--bronze); }
+
+    .recap-insights {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      position: relative; z-index: 1;
+    }
+    .recap-insights-title {
+      font-size: 11px; color: var(--text3);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .recap-insight {
+      font-size: 13px; line-height: 1.6;
+      color: var(--text2); margin-bottom: 8px;
+    }
+    .recap-insight:last-child { margin-bottom: 0; }
+    .recap-insight strong { color: var(--green); font-weight: 500; }
+
+    .btn {
+      padding: 10px 18px; border-radius: 8px;
+      font-family: var(--mono); font-size: 13px;
+      cursor: pointer; border: 1px solid var(--border2);
+      background: transparent; color: var(--text);
+      transition: all 0.15s; font-weight: 500;
+    }
+    .btn:hover { background: var(--bg3); }
+    .btn-primary {
+      background: var(--green); color: #0d0f0e;
+      border-color: var(--green);
+    }
+    .btn-primary:hover {
+      background: #5affa0; border-color: #5affa0;
+    }
 
     /* FOOTER */
     footer {
@@ -232,10 +448,22 @@
       color: var(--text3); font-size: 13px;
     }
 
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg3); border: 1px solid var(--green);
+      border-radius: 10px; padding: 12px 20px;
+      font-size: 13px; color: var(--green);
+      transition: transform 0.3s; z-index: 1001;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
     @media (max-width: 600px) {
       .podium { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
       .pod-score { font-size: 22px; }
       th, td { font-size: 11px; }
+      .recap-stat-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -254,6 +482,9 @@
     </div>
     <div class="week-chip" id="weekChip">Loading...</div>
   </header>
+
+  <!-- WEEKLY RECAP BANNER (shows for completed weeks) -->
+  <div id="recapBanner" style="display:none"></div>
 
   <!-- PODIUM -->
   <div class="section-label">Weekly podium</div>
@@ -283,6 +514,26 @@
   </footer>
 
 </div>
+
+<!-- RECAP MODAL -->
+<div class="modal-overlay" id="recapModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="recapModalTitle">Week Recap</div>
+      <div class="modal-subtitle" id="recapModalSubtitle"></div>
+    </div>
+    <div class="modal-body" id="recapModalBody">
+      <!-- Recap card generated here -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeRecapModal()">Close</button>
+      <button class="btn btn-primary" onclick="downloadRecap()">Download Image</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
 // ── helpers ──────────────────────────────────────────────────────────────────
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -297,7 +548,6 @@ function getWeekBounds(date) {
   const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
   return { mon, sun };
 }
-
 
 function toYMD(date) {
   return date.getFullYear() + '-' +
@@ -320,6 +570,167 @@ function getWeekNumber(date) {
 const AVATARS = ['av-0','av-1','av-2','av-3'];
 const MEDALS = ['🥇','🥈','🥉'];
 const POD_CLASSES = ['first','second','third'];
+
+let currentRecapData = null;
+
+// ── recap generation ─────────────────────────────────────────────────────────
+function generateRecap(weekData) {
+  const { mon, sun, weekNum, players, totals, sorted, byPlayerDate, weekScores } = weekData;
+  
+  // Calculate insights
+  const winner = sorted[0];
+  const winnerScore = totals[winner];
+  const totalGames = weekScores.length;
+  const avgScore = totalGames > 0 ? Math.round(weekScores.reduce((sum, s) => sum + s.final_score, 0) / totalGames) : 0;
+  
+  // Find best single game
+  let bestGame = null;
+  weekScores.forEach(s => {
+    if (!bestGame || s.final_score > bestGame.score) {
+      bestGame = { player: s.player, score: s.final_score, date: s.date };
+    }
+  });
+  
+  // Find most consistent player (lowest std dev)
+  let mostConsistent = null;
+  let lowestStdDev = Infinity;
+  sorted.forEach(p => {
+    const scores = Object.values(byPlayerDate[p]).map(s => s.final_score);
+    if (scores.length >= 3) {
+      const mean = scores.reduce((a,b) => a+b, 0) / scores.length;
+      const variance = scores.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) / scores.length;
+      const stdDev = Math.sqrt(variance);
+      if (stdDev < lowestStdDev) {
+        lowestStdDev = stdDev;
+        mostConsistent = p;
+      }
+    }
+  });
+
+  // Find biggest improvement (compare to previous week if available)
+  let biggestImprovement = null;
+  
+  // Count perfect rounds (100s)
+  const perfectRounds = {};
+  players.forEach(p => perfectRounds[p] = 0);
+  weekScores.forEach(s => {
+    if (s.rounds) {
+      s.rounds.forEach(r => {
+        if (r === 100) perfectRounds[s.player]++;
+      });
+    }
+  });
+  const mostPerfects = Object.keys(perfectRounds).reduce((a, b) => 
+    perfectRounds[a] > perfectRounds[b] ? a : b
+  );
+
+  const insights = [];
+  insights.push(`<strong>${winner}</strong> dominated the week with ${winnerScore.toLocaleString()} total points`);
+  
+  if (sorted.length >= 2) {
+    const gap = totals[sorted[0]] - totals[sorted[1]];
+    if (gap < 100) {
+      insights.push(`Tight race! Only <strong>${gap} points</strong> separated 1st and 2nd place`);
+    } else {
+      insights.push(`<strong>${sorted[1]}</strong> finished ${gap} points behind in 2nd place`);
+    }
+  }
+  
+  if (bestGame) {
+    insights.push(`Best single game: <strong>${bestGame.player}</strong> scored ${bestGame.score} points`);
+  }
+  
+  if (mostConsistent && mostConsistent !== winner) {
+    insights.push(`<strong>${mostConsistent}</strong> showed the most consistency across their games`);
+  }
+
+  if (perfectRounds[mostPerfects] > 0) {
+    insights.push(`<strong>${mostPerfects}</strong> hit ${perfectRounds[mostPerfects]} perfect round${perfectRounds[mostPerfects] > 1 ? 's' : ''} (100 pts)`);
+  }
+
+  return {
+    weekNum,
+    dateRange: fmtWeek(mon, sun),
+    winner,
+    winnerScore,
+    totalGames,
+    avgScore,
+    podium: sorted.slice(0, 3).map(p => ({ name: p, score: totals[p] })),
+    insights,
+    players: sorted.map(p => ({ 
+      name: p, 
+      total: totals[p],
+      gamesPlayed: Object.keys(byPlayerDate[p]).length
+    }))
+  };
+}
+
+function renderRecapCard(recap) {
+  return `
+    <div class="recap-card" id="recapCardToDownload">
+      <div class="recap-card-header">
+        <div class="recap-card-icon">🏆</div>
+        <div class="recap-card-title">Map<span>Tap</span> Recap</div>
+        <div class="recap-card-date">Week ${recap.weekNum} · ${recap.dateRange}</div>
+      </div>
+
+      <div class="recap-stat-grid">
+        <div class="recap-stat">
+          <div class="recap-stat-label">Total Games</div>
+          <div class="recap-stat-value">${recap.totalGames}</div>
+        </div>
+        <div class="recap-stat">
+          <div class="recap-stat-label">Avg Score</div>
+          <div class="recap-stat-value">${recap.avgScore}</div>
+        </div>
+      </div>
+
+      <div class="recap-podium-mini">
+        <div class="recap-podium-title">Final Standings</div>
+        <div class="recap-podium-row">
+          ${recap.podium.map((p, i) => `
+            <div class="recap-podium-item">
+              <div class="recap-podium-medal">${MEDALS[i]}</div>
+              <div class="recap-podium-name">${p.name}</div>
+              <div class="recap-podium-score">${p.score.toLocaleString()}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="recap-insights">
+        <div class="recap-insights-title">Week Highlights</div>
+        ${recap.insights.map(insight => `<div class="recap-insight">• ${insight}</div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function showRecapModal(recap) {
+  currentRecapData = recap;
+  document.getElementById('recapModalTitle').textContent = `Week ${recap.weekNum} Recap`;
+  document.getElementById('recapModalSubtitle').textContent = recap.dateRange;
+  document.getElementById('recapModalBody').innerHTML = renderRecapCard(recap);
+  document.getElementById('recapModal').classList.add('active');
+}
+
+function closeRecapModal() {
+  document.getElementById('recapModal').classList.remove('active');
+}
+
+function downloadRecap() {
+  // For now, copy to clipboard and show toast
+  // In production, you'd use html2canvas or similar to generate an image
+  const card = document.getElementById('recapCardToDownload');
+  if (card) {
+    showToast('💡 Screenshot this card to share!');
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('recapModal').addEventListener('click', (e) => {
+  if (e.target.id === 'recapModal') closeRecapModal();
+});
 
 // ── main ─────────────────────────────────────────────────────────────────────
 async function load() {
@@ -390,23 +801,43 @@ async function load() {
   // sort players by total
   const sorted = [...players].sort((a,b) => totals[b] - totals[a]);
 
+  // Check if week is complete (it's Monday or later of next week)
+  const isWeekComplete = today > sun;
+  if (isWeekComplete && sorted.length > 0 && weekScores.length > 0) {
+    const recap = generateRecap({ mon, sun, weekNum, players, totals, sorted, byPlayerDate, weekScores });
+    const banner = document.getElementById('recapBanner');
+    banner.style.display = 'block';
+    banner.className = 'recap-banner';
+    banner.onclick = () => showRecapModal(recap);
+    banner.innerHTML = `
+      <div class="recap-header">
+        <div class="recap-title">
+          <span class="recap-icon">📊</span>
+          Week ${weekNum} Recap Available
+        </div>
+        <div class="recap-subtitle">${recap.dateRange}</div>
+      </div>
+      <div class="recap-summary">
+        ${recap.winner} won with ${recap.winnerScore.toLocaleString()} points across ${recap.totalGames} games. Click to view full recap and insights.
+      </div>
+      <div class="recap-actions">
+        <button class="recap-btn recap-btn-primary" onclick="event.stopPropagation(); showRecapModal(${JSON.stringify(recap).replace(/"/g, '&quot;')})">View Recap</button>
+      </div>
+    `;
+  }
+
   // ── PODIUM ────────────────────────────────────────────────────────────────
   const podiumEl = document.getElementById('podium');
   if (sorted.length === 0) {
     podiumEl.innerHTML = '<div class="no-data" style="grid-column:1/-1">No scores yet this week.</div>';
   } else {
-    // reorder for visual: 2nd, 1st, 3rd
-    const visual = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
-    const visualClasses = sorted[1] ? ['second','first','third'] : ['first'];
-    podiumEl.innerHTML = '';
-
-    // We always show [1st] in center, so rebuild properly
     const podOrder = sorted.length >= 3
       ? [sorted[1], sorted[0], sorted[2]]
       : sorted.length === 2 ? [null, sorted[0], sorted[1]]
       : [null, sorted[0], null];
     const podCls = ['second','first','third'];
 
+    podiumEl.innerHTML = '';
     podOrder.forEach((player, i) => {
       const div = document.createElement('div');
       if (!player) { div.style.visibility = 'hidden'; div.className = 'pod'; podiumEl.appendChild(div); return; }
@@ -425,8 +856,6 @@ async function load() {
   }
 
   // ── TABLE ─────────────────────────────────────────────────────────────────
-  const activeDates = datesInWeek.filter(d => datesWithData.has(d) || d <= todayYMD).slice(0, 7);
-  // only show days that have at least one score OR are today/past
   const shownDates = datesInWeek.filter(d => d <= todayYMD);
 
   const tableCard = document.getElementById('tableCard');
@@ -435,7 +864,6 @@ async function load() {
   } else {
     const labelNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-    // find best score per date across all players
     const bestPerDate = {};
     shownDates.forEach(d => {
       let best = 0;
@@ -464,7 +892,6 @@ async function load() {
         return `<div class="day-cell${isBest ? ' best' : ''}">${entry.final_score}</div>`;
       }).join('');
 
-      // rounds data for expand
       const roundDays = shownDates.filter(d => byPlayerDate[player][d] && byPlayerDate[player][d].rounds);
       let roundsHtml = '';
       if (roundDays.length > 0) {
@@ -472,7 +899,6 @@ async function load() {
           const entry = byPlayerDate[player][d];
           const dateObj = new Date(d + 'T12:00:00');
           const label = `${MONTH_NAMES[dateObj.getMonth()]} ${dateObj.getDate()}`;
-          const maxR = Math.max(...entry.rounds);
           const bars = entry.rounds.map((r, ri) => {
             const h = Math.round((r / 100) * 48);
             return `<div class="dr-bar-wrap">
@@ -517,13 +943,12 @@ async function load() {
   }
 
   // ── HISTORY ───────────────────────────────────────────────────────────────
-  // group scores by week key (YYYY-Www)
   const weeks = {};
   allScores.forEach(s => {
     const d = new Date(s.date + 'T12:00:00');
     const { mon: wm } = getWeekBounds(d);
     const key = toYMD(wm);
-    if (key === toYMD(mon)) return; // skip current
+    if (key === toYMD(mon)) return;
     if (!weeks[key]) weeks[key] = { mon: wm, scores: [] };
     weeks[key].scores.push(s);
   });
@@ -535,12 +960,26 @@ async function load() {
     histList.innerHTML = histKeys.map(key => {
       const { mon: wm, scores } = weeks[key];
       const { sun: ws } = getWeekBounds(wm);
+      const wn = getWeekNumber(wm);
       const t = {};
       players.forEach(p => t[p] = 0);
       scores.forEach(s => { if (t[s.player] !== undefined) t[s.player] += s.final_score; });
       const winner = [...players].sort((a,b) => t[b]-t[a])[0];
       const sortedP = [...players].sort((a,b) => t[b]-t[a]);
-      return `<div class="hist-week">
+      
+      // Build recap for this historical week
+      const byPD = {};
+      players.forEach(p => byPD[p] = {});
+      scores.forEach(s => {
+        if (byPD[s.player]) byPD[s.player][s.date] = s;
+      });
+      const recap = generateRecap({ 
+        mon: wm, sun: ws, weekNum: wn, 
+        players, totals: t, sorted: sortedP, 
+        byPlayerDate: byPD, weekScores: scores 
+      });
+      
+      return `<div class="hist-week has-recap" onclick='showRecapModal(${JSON.stringify(recap).replace(/'/g, "\\'")})'>
         <div>
           <div class="hist-label">${fmtWeek(wm, ws)}</div>
           <div class="hist-winner">🏆 ${winner}</div>
@@ -551,6 +990,7 @@ async function load() {
             <div class="hist-score">${t[p].toLocaleString()}</div>
           </div>`).join('')}
         </div>
+        <span class="recap-indicator">📊</span>
       </div>`;
     }).join('');
   }
@@ -559,6 +999,13 @@ async function load() {
 function toggleRow(id) {
   const el = document.getElementById(id);
   el.classList.toggle('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show';
+  setTimeout(() => t.className = 'toast', 3000);
 }
 
 load();
