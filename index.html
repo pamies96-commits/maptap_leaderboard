@@ -291,10 +291,23 @@ const MONTH_NAMES = ['January','February','March','April','May','June',
 
 function getWeekBounds(date) {
   const d = new Date(date);
-  const day = d.getDay(); // 0=Sun
-  const diffToMon = (day === 0 ? -6 : 1 - day);
-  const mon = new Date(d); mon.setDate(d.getDate() + diffToMon); mon.setHours(0,0,0,0);
-  const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  
+  // Calculate days from Monday (week starts on Monday)
+  // If Sunday (0), it's the last day of the week, so go back 6 days to get Monday
+  // If Monday (1), diffToMon = 0
+  // If Tuesday (2), diffToMon = -1, etc.
+  const diffToMon = day === 0 ? -6 : 1 - day;
+  
+  const mon = new Date(d);
+  mon.setDate(d.getDate() + diffToMon);
+  mon.setHours(0, 0, 0, 0);
+  
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6);
+  sun.setHours(23, 59, 59, 999);
+  
   return { mon, sun };
 }
 
@@ -336,6 +349,7 @@ async function load() {
   const allScores = data.scores || [];
 
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize to midnight
   const { mon, sun } = getWeekBounds(today);
   const weekNum = getWeekNumber(today);
 
@@ -427,6 +441,7 @@ async function load() {
   // ── TABLE ─────────────────────────────────────────────────────────────────
   const activeDates = datesInWeek.filter(d => datesWithData.has(d) || d <= todayYMD).slice(0, 7);
   // only show days that have at least one score OR are today/past
+  // Fixed: use string comparison for YYYY-MM-DD format dates
   const shownDates = datesInWeek.filter(d => d <= todayYMD);
 
   const tableCard = document.getElementById('tableCard');
