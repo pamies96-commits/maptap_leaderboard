@@ -1452,6 +1452,19 @@
       "raw": "www.maptap.gg May 23\n75🤨 100🎯 96🔥 99🎯 90🌟\nFinal score: 934"
     },
     {
+      "date": "2026-05-23",
+      "player": "Pami",
+      "final_score": 776,
+      "rounds": [
+        100,
+        100,
+        96,
+        38,
+        90
+      ],
+      "raw": "www.maptap.gg May 23\n100🎯 100🎯 96🔥 38😶 90🌟\nFinal score: 776"
+    },
+    {
       "date": "2026-06-01",
       "player": "Nili",
       "final_score": 832,
